@@ -1,0 +1,51 @@
+jQuery(function ($) {
+  /* 
+    localized variables passed through params object:
+      stripe_nfpluginsettings.clearLogRestUrl
+      stripe_nfpluginsettings.clearLogButtonId  
+      stripe_nfpluginsettings.downloadLogRestUrl
+      stripe_nfpluginsettings.downloadLogButtonId
+      stripe_nfpluginsettings._wpnonce
+    
+    */
+
+  $("#" + stripe_nfpluginsettings.clearLogButtonId).on("click", () => {
+    $.post(
+      stripe_nfpluginsettings.clearLogRestUrl,
+      {
+        _wpnonce: stripe_nfpluginsettings._wpnonce,
+      },
+      function (json) {
+        console.log(json);
+      }
+    );
+  });
+
+  $("#" + stripe_nfpluginsettings.downloadLogButtonId).on("click", () => {
+    $.post(
+      stripe_nfpluginsettings.downloadLogRestUrl,
+      {
+        _wpnonce: stripe_nfpluginsettings._wpnonce,
+      },
+      function (json) {
+        let download = json.data;
+
+        var blob = new Blob([download], { type: "json" });
+
+        var a = document.createElement("a");
+        a.download = "nf-stripe-debug-log.json";
+        a.href = URL.createObjectURL(blob);
+        a.dataset.downloadurl = ["json", a.download, a.href].join(":");
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () {
+          URL.revokeObjectURL(a.href);
+        }, 15000);
+      }
+    );
+  });
+
+  return;
+});
